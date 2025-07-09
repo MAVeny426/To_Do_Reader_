@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { io } from 'socket.io-client'; // Import io for socket connection
-import Navbar from '../Components/Navbar'; // Import the Navbar component
+import { io } from 'socket.io-client'; 
+import Navbar from '../Components/Navbar'; 
 
-const socket = io('http://localhost:5000'); // Initialize socket connection
+const socket = io('https://to-do-reader-1.onrender.com'); 
 
 const TaskViewer = () => {
   const [tasks, setTasks] = useState([]);
   const [userEmail, setUserEmail] = useState('');
   const [selectedTask, setSelectedTask] = useState(null);
 
-  // State for message modal
   const [messageModal, setMessageModal] = useState({
     isVisible: false,
     title: '',
@@ -28,12 +27,11 @@ const TaskViewer = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        // Retrieve the user email from localStorage, assuming it's stored under 'user' key
         const user = JSON.parse(localStorage.getItem('user'));
-        const email = user?.email; // Get the email from the user object
+        const email = user?.email; 
         setUserEmail(email);
 
-        const res = await fetch('http://localhost:5000/api/tasks/gettasks');
+        const res = await fetch('https://to-do-reader-1.onrender.com/api/tasks/gettasks');
         const data = await res.json();
         setTasks(data);
       } catch (err) {
@@ -43,9 +41,8 @@ const TaskViewer = () => {
 
     fetchTasks();
 
-    // Listen for real-time task updates from the socket
     socket.on('taskUpdated', (updatedTask) => {
-      console.log('Task updated via socket:', updatedTask); // Log received update
+      console.log('Task updated via socket:', updatedTask);
       setTasks((prev) =>
         prev.map((task) =>
           task._id === updatedTask._id ? updatedTask : task
@@ -53,27 +50,25 @@ const TaskViewer = () => {
       );
     });
 
-    // Clean up socket listener on component unmount
     return () => {
       socket.off('taskUpdated');
     };
   }, []);
 
   const toggleComplete = async (taskId) => {
-    // Find the task to get its current completion status
     const taskToUpdate = tasks.find(task => task._id === taskId);
-    if (!taskToUpdate) return; // Should not happen if taskId is valid
+    if (!taskToUpdate) return; 
 
-    const newCompletedStatus = !taskToUpdate.completed; // Toggle the completed status
-    const newStatus = newCompletedStatus ? 'done' : 'Todo'; // Set backend status based on completion
+    const newCompletedStatus = !taskToUpdate.completed;
+    const newStatus = newCompletedStatus ? 'done' : 'Todo'; 
 
     try {
-      const res = await fetch(`http://localhost:5000/api/tasks/update/${taskId}`, {
+      const res = await fetch(`https://to-do-reader-1.onrender.com/api/tasks/update/${taskId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           completed: newCompletedStatus,
-          status: newStatus // Send the updated status to the backend
+          status: newStatus 
         }), 
       });
 
@@ -82,7 +77,7 @@ const TaskViewer = () => {
         setTasks((prev) =>
           prev.map((task) => (task._id === updated._id ? updated : task))
         );
-        socket.emit('taskUpdated', updated); // Emit update to other clients
+        socket.emit('taskUpdated', updated); 
         showMessageModal(
           'Task Status Updated!', 
           `Task "${updated.title}" is now ${updated.completed ? 'completed' : 'pending'} and its status is "${updated.status}".`, 
@@ -96,7 +91,6 @@ const TaskViewer = () => {
           const errorData = JSON.parse(errorText);
           errorMessage = errorData.msg || errorMessage;
         } catch (parseError) {
-          // If response is not JSON, use the raw text or a generic message
           errorMessage = errorText || errorMessage;
         }
         showMessageModal('Update Failed', errorMessage, 'error');
@@ -107,16 +101,13 @@ const TaskViewer = () => {
     }
   };
 
-  // "Your Assigned Tasks" are tasks assigned to the logged-in user's email
   const myTasks = tasks.filter(
     (task) =>
       task.assignedUser?.toLowerCase() === userEmail?.toLowerCase()
   );
 
-  // "All Tasks" now displays all tasks fetched from the backend
-  const allTasks = tasks; // No filtering needed here
+  const allTasks = tasks; 
 
-  // Helper functions for modal styling
   const getModalBgClass = (type) => {
     switch (type) {
       case 'success': return 'bg-green-100 border-green-500 text-green-800';
@@ -137,10 +128,8 @@ const TaskViewer = () => {
 
   return (
     <>
-    <Navbar /> {/* Added Navbar component here */}
-    {/* Main container: h-screen to fix height, flex-col for mobile, flex-row for large screens */}
+    <Navbar /> 
     <div className="h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-black text-white px-4 py-10 flex flex-col lg:flex-row items-start lg:items-stretch justify-center gap-8 font-inter">
-      {/* Message Modal */}
       {messageModal.isVisible && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
           <div className={`rounded-xl shadow-2xl p-6 w-full max-w-md border-t-8 ${getModalBgClass(messageModal.type)}`}>
@@ -156,11 +145,8 @@ const TaskViewer = () => {
         </div>
       )}
 
-      {/* My Tasks Section */}
-      {/* Added flex-grow to make it expand vertically in lg:flex-row */}
       <section className="bg-white text-gray-900 p-8 rounded-3xl shadow-2xl w-full lg:w-2/5 mb-8 lg:mb-0 border border-purple-300 transform hover:scale-[1.005] transition-transform duration-300 ease-in-out animate-fadeInLeft flex flex-col">
         <h2 className="text-4xl font-extrabold text-center mb-8 text-purple-800 tracking-wide">Your Assigned Tasks</h2>
-        {/* Inner div for scrolling content. flex-grow to fill space, overflow-y-auto for scrolling */}
         <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar">
           {myTasks.length === 0 ? (
             <p className="text-center text-gray-500 text-lg py-4">No tasks assigned to you. Time to relax or create one!</p>
@@ -177,11 +163,8 @@ const TaskViewer = () => {
         </div>
       </section>
 
-      {/* All Tasks Section */}
-      {/* Added flex-grow to make it expand vertically in lg:flex-row */}
       <section className="bg-white text-gray-900 p-8 rounded-3xl shadow-2xl w-full lg:w-3/5 border border-indigo-300 transform hover:scale-[1.005] transition-transform duration-300 ease-in-out animate-fadeInRight flex flex-col">
         <h2 className="text-4xl font-extrabold text-center mb-8 text-indigo-800 tracking-wide">All Available Tasks</h2>
-        {/* Inner div for scrolling content. flex-grow to fill space, overflow-y-auto for scrolling */}
         <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar">
           {allTasks.length === 0 ? (
             <p className="text-center text-gray-500 text-lg py-4">No tasks available. Start creating some!</p>
@@ -198,7 +181,6 @@ const TaskViewer = () => {
         </div>
       </section>
 
-      {/* Task Details Modal */}
       {selectedTask && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
           <div className="bg-white text-gray-900 p-8 rounded-2xl shadow-2xl w-full max-w-md relative animate-fadeInUp border-t-8 border-blue-600">
@@ -239,7 +221,6 @@ const TaskViewer = () => {
   );
 };
 
-// Reusable Task Card Component
 const TaskCard = ({ task, toggleComplete, setSelectedTask }) => (
   <div
     className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 rounded-xl transition transform duration-300 ease-in-out mb-4 border-l-8

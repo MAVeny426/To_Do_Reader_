@@ -23,7 +23,7 @@ const AvatarPage = () => {
       }
 
       try {
-        const userRes = await fetch('http://localhost:5000/api/auth/me', {
+        const userRes = await fetch('https://to-do-reader-1.onrender.com/api/auth/me', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ const AvatarPage = () => {
           setError(errorData.msg || 'Failed to fetch profile data.');
         }
 
-        const completedTasksRes = await fetch('http://localhost:5000/api/tasks/mycompleted', {
+        const completedTasksRes = await fetch('https://to-do-reader-1.onrender.com/api/tasks/mycompleted', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
