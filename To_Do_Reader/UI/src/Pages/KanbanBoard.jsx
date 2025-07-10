@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 import Navbar from '../Components/Navbar';
 
 // const socket=io('https://to-do-reader-1.onrender.com');
-import socket from '../Socket';
+import socket from '../Socket.js';
 
 const COLUMN_NAMES=['Todo', 'in-progress', 'done'];
 
