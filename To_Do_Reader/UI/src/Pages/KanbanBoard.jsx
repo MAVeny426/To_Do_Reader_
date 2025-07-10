@@ -2,7 +2,8 @@ import React,{ useEffect,useState} from 'react';
 import { io } from 'socket.io-client';
 import Navbar from '../Components/Navbar';
 
-const socket=io('https://to-do-reader-1.onrender.com');
+// const socket=io('https://to-do-reader-1.onrender.com');
+import socket from '../Socket';
 
 const COLUMN_NAMES=['Todo', 'in-progress', 'done'];
 
