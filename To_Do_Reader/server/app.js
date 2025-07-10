@@ -14,7 +14,7 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-const FRONTEND_URL = 'https://to-do-reader-ui-ltpr.onrender.com';
+const FRONTEND_URL = 'https://to-do-reader-ui-iu2m.onrender.com';
 
 const io = new Server(server, {
   cors: {
