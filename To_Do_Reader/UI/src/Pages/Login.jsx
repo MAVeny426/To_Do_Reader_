@@ -95,7 +95,7 @@ const Login = () => {
       )}
 
       <div className='bg-white backdrop-blur-sm p-10 rounded-xl shadow-2xl w-full max-w-md'>
-        <h1 className='text-4xl font-extrabold mb-6 text-center text-gray-900'>Welcome Back</h1>
+        <h1 className='text-4xl font-extrabold mb-6 text-center text-gray-900'>Welcome Back...Login</h1>
            
         <form onSubmit={handleSubmit} className='space-y-6'>
           <div>
