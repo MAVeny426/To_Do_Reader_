@@ -2,7 +2,7 @@ import React,{ useEffect,useState} from 'react';
 // import { io } from 'socket.io-client';
 import Navbar from '../Components/Navbar';
 
-// const socket=io('https://to-do-reader-1.onrender.com');
+// const socket=io('https://to-do-reader-server.onrender.com');
 import socket from '../Socket.js';
 
 const COLUMN_NAMES=['Todo', 'in-progress', 'done'];
@@ -126,7 +126,7 @@ const KanbanBoard=()=>{
 
   const fetchTasks = async () => {
     try {
-      const res = await fetch('https://to-do-reader-1.onrender.com/api/tasks/gettasks');
+      const res = await fetch('https://to-do-reader-server.onrender.com/api/tasks/gettasks');
       const data = await res.json();
       setTasks(data);
     } catch (err) {
@@ -136,7 +136,7 @@ const KanbanBoard=()=>{
 
   const fetchLogs = async () => {
     try {
-      const res = await fetch('https://to-do-reader-1.onrender.com/api/activitylog/latest?limit=20');
+      const res = await fetch('https://to-do-reader-server.onrender.com/api/activitylog/latest?limit=20');
       const data = await res.json();
       setActivityLogs(data);
     } catch (err) {
@@ -146,7 +146,7 @@ const KanbanBoard=()=>{
 
   const logActivity = async (action) => {
     const userDisplayName = loggedInUser?.name || loggedInUser?.email || 'unknown';
-    await fetch('https://to-do-reader-1.onrender.com/api/activitylog/add', {
+    await fetch('https://to-do-reader-server.onrender.com/api/activitylog/add', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action, user: userDisplayName })
@@ -155,7 +155,7 @@ const KanbanBoard=()=>{
 
   const handleSmartAssign = async () => {
     try {
-      const usersRes = await fetch("https://to-do-reader-1.onrender.com/api/tasks/users");
+      const usersRes = await fetch("https://to-do-reader-server.onrender.com/api/tasks/users");
       const users = await usersRes.json();
 
       const taskCounts = users.map(user => ({
@@ -176,7 +176,7 @@ const KanbanBoard=()=>{
       };
 
       const token = localStorage.getItem('token');
-      const res = await fetch('https://to-do-reader-1.onrender.com/api/tasks/createtask', {
+      const res = await fetch('https://to-do-reader-server.onrender.com/api/tasks/createtask', {
         method: 'POST',
         headers: {
           'Content-Type':'application/json',
@@ -238,7 +238,7 @@ const KanbanBoard=()=>{
     if (editingTask && editingTask._id) {
       const payload = {...taskWithCreator,originalLastModified:newTask.originalLastModified };
 
-      const res = await fetch(`https://to-do-reader-1.onrender.com/api/tasks/update/${editingTask._id}`, {
+      const res = await fetch(`https://to-do-reader-server.onrender.com/api/tasks/update/${editingTask._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type':'application/json',
@@ -272,7 +272,7 @@ const KanbanBoard=()=>{
       }
       setEditingTask(null);
     } else {
-      const res = await fetch('https://to-do-reader-1.onrender.com/api/tasks/createtask', {
+      const res = await fetch('https://to-do-reader-server.onrender.com/api/tasks/createtask', {
         method:'POST',
         headers: {
           'Content-Type':'application/json',
@@ -327,7 +327,7 @@ const KanbanBoard=()=>{
       `Are you sure you want to delete "${task?.title}"? This action cannot be undone.`,
       async () => {
         hideConfirmModal();
-        const res = await fetch(`https://to-do-reader-1.onrender.com/api/tasks/delete/${id}`, {
+        const res = await fetch(`https://to-do-reader-server.onrender.com/api/tasks/delete/${id}`, {
           method:'DELETE',
         });
 
@@ -350,7 +350,7 @@ const KanbanBoard=()=>{
     const user = JSON.parse(localStorage.getItem('user'));
     const userName = user?.name || user?.email || 'unknown';
 
-    const res = await fetch(`https://to-do-reader-1.onrender.com/api/tasks/comment/${taskId}`, {
+    const res = await fetch(`https://to-do-reader-server.onrender.com/api/tasks/comment/${taskId}`, {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({text:commentText,user:userName})
@@ -391,7 +391,7 @@ const KanbanBoard=()=>{
         payload.originalLastModified = draggedTask.lastModified || draggedTask.updatedAt;
       }
 
-      const res = await fetch(`https://to-do-reader-1.onrender.com/api/tasks/update/${draggedTaskId}`, {
+      const res = await fetch(`https://to-do-reader-server.onrender.com/api/tasks/update/${draggedTaskId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

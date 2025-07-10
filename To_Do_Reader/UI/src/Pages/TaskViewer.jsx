@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client'; 
 import Navbar from '../Components/Navbar'; 
 
-const socket = io('https://to-do-reader-1.onrender.com'); 
+const socket = io('https://to-do-reader-server.onrender.com'); 
 
 const TaskViewer = () => {
   const [tasks, setTasks] = useState([]);
@@ -31,7 +31,7 @@ const TaskViewer = () => {
         const email = user?.email; 
         setUserEmail(email);
 
-        const res = await fetch('https://to-do-reader-1.onrender.com/api/tasks/gettasks');
+        const res = await fetch('https://to-do-reader-server.onrender.com/api/tasks/gettasks');
         const data = await res.json();
         setTasks(data);
       } catch (err) {
@@ -63,7 +63,7 @@ const TaskViewer = () => {
     const newStatus = newCompletedStatus ? 'done' : 'Todo'; 
 
     try {
-      const res = await fetch(`https://to-do-reader-1.onrender.com/api/tasks/update/${taskId}`, {
+      const res = await fetch(`https://to-do-reader-server.onrender.com/api/tasks/update/${taskId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

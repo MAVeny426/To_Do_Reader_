@@ -13,7 +13,7 @@ const Signup = () => {
         e.preventDefault();
         if (form.password !==form.confirmpassword) return alert ('Passwords do not match');
 
-        const res=await fetch('https://to-do-reader-1.onrender.com/api/auth/register',{
+        const res=await fetch('https://to-do-reader-server.onrender.com/api/auth/register',{
             method:'POST',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify(form)

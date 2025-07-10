@@ -16,9 +16,7 @@ const server = http.createServer(app);
 
 // Define ALL allowed frontend origins here
 const allowedOrigins = [
-  'https://to-do-reader-ui-iu2m.onrender.com', // Your NEW deployed frontend
-  'https://to-do-reader-ui-ltpr.onrender.com', // Your OLD deployed frontend (if still in use)
-  'http://localhost:3000'                      // For local development
+  'https://to-do-reader-ui-iu2m.onrender.com'                     // For local development
 ];
 
 const io = new Server(server, {
