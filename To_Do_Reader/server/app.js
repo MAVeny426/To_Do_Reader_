@@ -12,38 +12,32 @@ const activityRouter = require('./routes/activityLogRoute');
 dotenv.config();
 
 const app = express();
-const server = http.createServer(app); // Wrap app with http server
+const server = http.createServer(app); 
 
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: 'https://to-do-reader-ui-ltpr.onrender.com',
     methods: ['GET', 'POST', 'PUT', 'DELETE']
   }
 });
 
-// Save io instance to app so you can use it in route handlers
 app.set('io', io);
 
 app.use(cors());
 app.use(express.json());
 
-// Mount routes
 app.use('/api/auth', authRouter);
 app.use('/api/tasks', taskRouter);
 app.use('/api/activitylog', activityRouter);
 
-// MongoDB Connection
 mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
 
-// ✅ Real-time socket connection
 io.on('connection', (socket) => {
   console.log('A user connected');
 
-  // Optional: You can listen to client events if needed
   socket.on('taskUpdated', (task) => {
-    // Broadcast to all other clients
     socket.broadcast.emit('taskUpdated', task);
   });
 
@@ -51,13 +45,10 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('newComment', task);
   });
 
-  // ✅ Listen for task editing start
   socket.on('editingTask', ({ taskId, user }) => {
-    // Broadcast to all other clients
     socket.broadcast.emit('taskBeingEdited', { taskId, user });
   });
 
-  // ✅ Listen for task editing stop
   socket.on('stopEditingTask', ({ taskId }) => {
     socket.broadcast.emit('taskStoppedEditing', { taskId });
   });
