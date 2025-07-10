@@ -14,21 +14,41 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-const FRONTEND_URL = 'https://to-do-reader-ui-iu2m.onrender.com';
+// Define ALL allowed frontend origins here
+const allowedOrigins = [
+  'https://to-do-reader-ui-iu2m.onrender.com', // Your NEW deployed frontend
+  'https://to-do-reader-ui-ltpr.onrender.com', // Your OLD deployed frontend (if still in use)
+  'http://localhost:3000'                      // For local development
+];
 
 const io = new Server(server, {
   cors: {
-    origin: FRONTEND_URL,
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      // Or if the origin is in our allowed list
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
-    transports: ['websocket'], 
+    transports: ['websocket'],
   }
 });
 
 app.set('io', io);
 
 app.use(cors({
-  origin: FRONTEND_URL,
+  origin: function (origin, callback) {
+    // Allow requests with no origin
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());
