@@ -12,30 +12,40 @@ const activityRouter = require('./routes/activityLogRoute');
 dotenv.config();
 
 const app = express();
-const server = http.createServer(app); 
+const server = http.createServer(app);
+
+const FRONTEND_URL = 'https://to-do-reader-ui-ltpr.onrender.com';
 
 const io = new Server(server, {
   cors: {
-    origin: 'https://to-do-reader-ui-ltpr.onrender.com',
-    methods: ['GET', 'POST', 'PUT', 'DELETE']
+    origin: FRONTEND_URL,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+    transports: ['websocket'], 
   }
 });
 
 app.set('io', io);
 
-app.use(cors());
+app.use(cors({
+  origin: FRONTEND_URL,
+  credentials: true
+}));
 app.use(express.json());
 
 app.use('/api/auth', authRouter);
 app.use('/api/tasks', taskRouter);
 app.use('/api/activitylog', activityRouter);
 
-mongoose.connect(process.env.MONGO_URL)
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.log(err));
+mongoose.connect(process.env.MONGO_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log('MongoDB connected'))
+.catch((err) => console.error('MongoDB Error:', err));
 
 io.on('connection', (socket) => {
-  console.log('A user connected');
+  console.log('⚡ Socket.io client connected');
 
   socket.on('taskUpdated', (task) => {
     socket.broadcast.emit('taskUpdated', task);
@@ -54,9 +64,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log('A user disconnected');
+    console.log('Socket.io client disconnected');
   });
 });
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
